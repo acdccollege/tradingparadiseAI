@@ -86,7 +86,7 @@ export default function HeaderBar({
         >
           <img src="/icons/nofx.svg" alt="NOFX Logo" className="w-7 h-7" />
           <span className="text-lg font-bold text-nofx-gold">
-            NOFX
+            TradingParadise
           </span>
         </div>
 
