@@ -1,31 +1,49 @@
-# backend still from official image
+# =====================================================
+# 1) Backend：繼續使用官方 backend image（先不動）
+# =====================================================
 FROM ghcr.io/nofxaios/nofx/nofx-backend:latest AS backend
 
-# build frontend from your repo
+# =====================================================
+# 2) Frontend：從你的 repo 的 web/ 自己 build
+# =====================================================
 FROM node:20-alpine AS frontend_build
 WORKDIR /web
+
+# 安裝依賴（利用快取）
 COPY web/package*.json ./
 RUN npm ci
+
+# 複製前端原始碼
 COPY web/ ./
+
+# build（vite → dist）
 RUN npm run build
 
-# final
+# =====================================================
+# 3) Final image：nginx + backend + 你 build 的前端
+# =====================================================
 FROM alpine:latest
 RUN apk add --no-cache ca-certificates tzdata sqlite nginx openssl gettext
 
-# backend binary + libs (維持你原本的做法)
+# backend binary & libs（照你原本的）
 COPY --from=backend /app/nofx /app/nofx
 COPY --from=backend /usr/local/lib/libta_lib* /usr/local/lib/
 RUN ldconfig /usr/local/lib 2>/dev/null || true
 
-# frontend static (Vite dist / CRA build)
+# frontend static files（⚠️ 關鍵在這行）
 COPY --from=frontend_build /web/dist /usr/share/nginx/html
 
 WORKDIR /app
 RUN mkdir -p /app/data
+
+# Railway 啟動腳本
 COPY railway/start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
 ENV DB_PATH=/app/data/data.db
 EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-8080}/health || exit 1
+
 CMD ["/app/start.sh"]
