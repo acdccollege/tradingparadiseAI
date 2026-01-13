@@ -318,7 +318,7 @@ export default function HeaderBar({
                 onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
                 className="flex items-center gap-2 px-3 py-2 rounded transition-colors text-nofx-text-muted hover:bg-white/5"
               >
-                <span className="text-lg">{language === 'zh' ? '🇨🇳' : '🇺🇸'}</span>
+                <span className="text-lg">{language === 'zh' ? 'TW' : '🇺🇸'}</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
 
@@ -336,7 +336,7 @@ export default function HeaderBar({
                           : 'hover:bg-white/5'
                       }`}
                   >
-                    <span className="text-base">🇨🇳</span>
+                    <span className="text-base">TW</span>
                     <span className="text-sm">中文</span>
                   </button>
                   <button
@@ -468,7 +468,7 @@ export default function HeaderBar({
                           : 'text-nofx-text-muted hover:text-white hover:bg-white/5'
                       }`}
                   >
-                    🇨🇳 中文
+                    TW 中文
                   </button>
                   <button
                     onClick={() => onLanguageChange?.('en')}
